@@ -8,14 +8,17 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'mssql', // For mySQL 'mysql'
       host: 'localhost',
       port: 3306,
-      username: 'root',
+      username: 'sa', // For mySQL 'root'
       password: 'root',
       database: 'ambassador',
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
+      extra: { // Need only for msSQL
+        trustServerCertificate: true,
+      }
     }),
     UserModule,
     AuthModule

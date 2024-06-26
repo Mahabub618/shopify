@@ -18,7 +18,7 @@ import { JwtStrategy } from "./jwt.strategy";
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
+        secret: 'topSecret-key',
         signOptions: {
           expiresIn: 3600,
         },
