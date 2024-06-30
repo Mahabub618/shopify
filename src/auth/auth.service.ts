@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -71,7 +72,11 @@ export class AuthService {
       return user;
     }
     else {
-      throw new Error('User not found!');
+      throw new NotFoundException('User not found!');
     }
+  }
+  async logout(response: Response): Promise<{message: string}> {
+    response.clearCookie('jwt');
+    return { message: 'success'};
   }
 }
