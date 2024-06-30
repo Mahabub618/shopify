@@ -13,7 +13,7 @@ import { AuthCredentialDto } from "./dtos/authCredential.dto";
 import { User } from "./user.entity";
 import { JwtPayload } from "./jwt-payload.interface";
 import { JwtService } from "@nestjs/jwt";
-import { Response } from "express";
+import { Request, Response } from "express";
 @Injectable()
 export class AuthService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
@@ -61,6 +61,17 @@ export class AuthService {
     }
     else {
       throw new UnauthorizedException('Invalid credentials');
+    }
+  }
+  async verifyUser(request: Request) {
+    const cookie = request.cookies['jwt'];
+    const { email } = await this.jwtService.verifyAsync(cookie);
+    const user = await this.userRepository.findOne({where: {email}});
+    if (user) {
+      return user;
+    }
+    else {
+      throw new Error('User not found!');
     }
   }
 }

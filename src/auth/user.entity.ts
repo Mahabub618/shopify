@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
+import { Exclude } from "class-transformer";
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -14,9 +15,11 @@ export class User extends BaseEntity {
   @Column({unique: true})
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
+  @Exclude()
   @Column()
   salt: string;
 
