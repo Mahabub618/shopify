@@ -16,6 +16,7 @@ import { JwtPayload } from "./jwt-payload.interface";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
 import { UpdateUserInfoDto } from "./dtos/updateUserInfo.dto";
+import { UpdatePasswordDto } from "./dtos/updatePassword.dto";
 @Injectable()
 export class AuthService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
@@ -88,8 +89,40 @@ export class AuthService {
       user.firstName = updateInfo.firstName;
       user.lastName = updateInfo.lastName;
       user.email = updateInfo.email;
-      await user.save();
-      return user;
+
+      try {
+        await user.save();
+        return user;
+      } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+          throw new ConflictException('Email is already exist');
+        }
+        else {
+          throw new InternalServerErrorException();
+        }
+      }
+    }
+    else {
+      throw new NotFoundException('User not found!');
+    }
+  }
+  async updatePassword(request: Request, updatePassword: UpdatePasswordDto) {
+    if (updatePassword.password !== updatePassword.confirmPassword) {
+      throw new BadRequestException('Password does not match');
+    }
+    const cookie = request.cookies['jwt'];
+    const { email } = await this.jwtService.verifyAsync(cookie);
+    const user = await this.userRepository.findOne({where: {email}});
+    if (user) {
+      user.salt = await bcrypt.genSalt();
+      user.password = await this.hashPassword(updatePassword.password, user.salt);
+
+      try {
+        await user.save();
+        return { message: 'Password changed successfully' };
+      } catch (error) {
+        throw new InternalServerErrorException();
+      }
     }
     else {
       throw new NotFoundException('User not found!');

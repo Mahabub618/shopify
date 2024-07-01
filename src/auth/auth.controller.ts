@@ -18,6 +18,7 @@ import { Request, Response } from "express";
 import { User } from "./user.entity";
 import { AuthGuard } from './auth.guard';
 import { UpdateUserInfoDto } from "./dtos/updateUserInfo.dto";
+import { UpdatePasswordDto } from "./dtos/updatePassword.dto";
 
 @Controller()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -48,5 +49,10 @@ export class AuthController {
   @Put('admin/users/info')
   async updateInfo(@Body(ValidationPipe) updateDto: UpdateUserInfoDto, @Req() request: Request) {
     return this.authService.updateInfo(request, updateDto);
+  }
+  @UseGuards(AuthGuard)
+  @Put('admin/users/password')
+  async updatePassword(@Body(ValidationPipe) updatePassword: UpdatePasswordDto, @Req() request: Request) {
+    return this.authService.updatePassword(request, updatePassword);
   }
 }
