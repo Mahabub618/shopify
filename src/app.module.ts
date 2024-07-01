@@ -5,14 +5,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql', // For mySQL 'mysql'
+      type: 'mssql', // For mySQL 'mysql'
       host: 'localhost',
       port: 3306,
-      username: 'root', // For mySQL 'root'
+      username: 'sa', // For mySQL 'root'
       password: 'root',
       database: 'ambassador',
       autoLoadEntities: true,
@@ -23,7 +24,8 @@ import { ProductModule } from './product/product.module';
     }),
     UserModule,
     AuthModule,
-    ProductModule
+    ProductModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
