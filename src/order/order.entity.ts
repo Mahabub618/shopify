@@ -10,7 +10,7 @@ export class Order extends BaseEntity {
   transactionId: string;
 
   @Column()
-  userId: number;
+  userId: string;
 
   @Column()
   code: string;
