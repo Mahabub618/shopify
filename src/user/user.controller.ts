@@ -1,4 +1,13 @@
-import { Controller } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Get, UseInterceptors } from "@nestjs/common";
+import { UserService } from "./user.service";
 
-@Controller('user')
-export class UserController {}
+@Controller()
+@UseInterceptors(ClassSerializerInterceptor)
+export class UserController {
+  constructor(private userService: UserService) {
+  }
+  @Get('admin/ambassadors')
+  ambassadors() {
+    return this.userService.ambassadors();
+  }
+}
