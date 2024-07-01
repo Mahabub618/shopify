@@ -17,7 +17,7 @@ import { AuthCredentialDto } from "./dtos/authCredential.dto";
 import { Request, Response } from "express";
 import { User } from "./user.entity";
 import { AuthGuard } from './auth.guard';
-import { UpdateUserInfoDto } from "./dtos/updateUserInfo-dto";
+import { UpdateUserInfoDto } from "./dtos/updateUserInfo.dto";
 
 @Controller()
 @UseInterceptors(ClassSerializerInterceptor)

@@ -15,7 +15,7 @@ import { User } from "./user.entity";
 import { JwtPayload } from "./jwt-payload.interface";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
-import { UpdateUserInfoDto } from "./dtos/updateUserInfo-dto";
+import { UpdateUserInfoDto } from "./dtos/updateUserInfo.dto";
 @Injectable()
 export class AuthService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
