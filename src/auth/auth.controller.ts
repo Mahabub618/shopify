@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -16,6 +17,7 @@ import { AuthCredentialDto } from "./dtos/authCredential.dto";
 import { Request, Response } from "express";
 import { User } from "./user.entity";
 import { AuthGuard } from './auth.guard';
+import { UpdateUserInfoDto } from "./dtos/updateUserInfo-dto";
 
 @Controller()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -41,5 +43,10 @@ export class AuthController {
   @Post('admin/logout')
   async logout(@Res({passthrough: true}) response: Response): Promise<{message: string}> {
     return this.authService.logout(response);
+  }
+  @UseGuards(AuthGuard)
+  @Put('admin/users/info')
+  async updateInfo(@Body(ValidationPipe) updateDto: UpdateUserInfoDto, @Req() request: Request) {
+    return this.authService.updateInfo(request, updateDto);
   }
 }

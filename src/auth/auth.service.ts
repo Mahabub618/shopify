@@ -15,6 +15,7 @@ import { User } from "./user.entity";
 import { JwtPayload } from "./jwt-payload.interface";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
+import { UpdateUserInfoDto } from "./dtos/updateUserInfo-dto";
 @Injectable()
 export class AuthService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
@@ -78,5 +79,20 @@ export class AuthService {
   async logout(response: Response): Promise<{message: string}> {
     response.clearCookie('jwt');
     return { message: 'success'};
+  }
+  async updateInfo(request: Request, updateInfo: UpdateUserInfoDto) {
+    const cookie = request.cookies['jwt'];
+    const { email } = await this.jwtService.verifyAsync(cookie);
+    const user = await this.userRepository.findOne({where: {email}});
+    if (user) {
+      user.firstName = updateInfo.firstName;
+      user.lastName = updateInfo.lastName;
+      user.email = updateInfo.email;
+      await user.save();
+      return user;
+    }
+    else {
+      throw new NotFoundException('User not found!');
+    }
   }
 }
