@@ -6,7 +6,10 @@ import { ProductCreateDto } from "./dtos/productCreate.dto";
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectRepository(Product) private readonly productRepository: Repository<Product>) {
+  constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {
+  }
+  async save(options) {
+    return this.productRepository.save(options);
   }
   async getProduct(): Promise<Product[]> {
     return this.productRepository.find({});
