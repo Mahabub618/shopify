@@ -13,7 +13,7 @@ import { OrderItemService } from '../order/order-item.service';
     const order = await orderService.save({
       transactionId: faker.finance.bitcoinAddress(),
       userId: faker.string.uuid(),
-      code: faker.lorem.slug(4),
+      code: faker.lorem.slug(2),
       ambassadorEmail: faker.internet.email(),
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
@@ -25,10 +25,10 @@ import { OrderItemService } from '../order/order-item.service';
       await orderItemService.save({
         order,
         productTitle: faker.commerce.productName(),
-        price: faker.commerce.price(),
-        quantity: faker.lorem.words(2),
-        adminRevenue: faker.finance.amount(),
-        ambassadorRevenue: faker.finance.amount()
+        price: faker.number.int({min: 1, max: 100000}),
+        quantity: faker.number.int({min: 1, max: 20}),
+        adminRevenue: faker.number.int({min: 1, max: 100000}),
+        ambassadorRevenue: faker.number.int({min: 1, max: 100000})
       });
     }
   }

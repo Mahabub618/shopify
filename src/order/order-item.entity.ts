@@ -10,16 +10,16 @@ export class OrderItem extends BaseEntity {
   productTitle: string;
 
   @Column()
-  price: string;
+  price: number;
 
   @Column()
-  quantity: string;
+  quantity: number;
 
   @Column()
-  adminRevenue: string;
+  adminRevenue: number;
 
   @Column()
-  ambassadorRevenue: string;
+  ambassadorRevenue: number;
 
   @ManyToOne(type => Order, order => order.orderItems)
   @JoinColumn({name: 'orderId'})

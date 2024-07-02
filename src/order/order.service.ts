@@ -11,6 +11,8 @@ export class OrderService {
     return this.orderRepository.save(options);
   }
   async getAllOrder(){
-    return this.orderRepository.find({});
+    return this.orderRepository.find({
+      relations: ['orderItems']
+    });
   }
 }
