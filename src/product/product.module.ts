@@ -3,10 +3,12 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Product } from "./product.entity";
+import { SharedModule } from "../shared/shared.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product])
+    TypeOrmModule.forFeature([Product]),
+    SharedModule
   ],
   controllers: [ProductController],
   providers: [ProductService]
