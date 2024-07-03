@@ -12,7 +12,8 @@ export class LinkService {
   }
   async getAllLink(id: number) {
     return this.linkRepository.find({
-      where: { user: { id: id } }
+      where: { user: { id: id } },
+      relations: ['orders']
     });
   }
 }
