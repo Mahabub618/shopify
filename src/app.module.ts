@@ -6,14 +6,15 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { LinkModule } from './link/link.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mssql', // For mySQL 'mysql'
+      type: 'mysql', // For mySQL 'mysql'
       host: 'localhost',
       port: 3306,
-      username: 'sa', // For mySQL 'root'
+      username: 'root', // For mySQL 'root'
       password: 'root',
       database: 'ambassador',
       autoLoadEntities: true,
@@ -25,7 +26,8 @@ import { OrderModule } from './order/order.module';
     UserModule,
     AuthModule,
     ProductModule,
-    OrderModule
+    OrderModule,
+    LinkModule
   ],
   controllers: [AppController],
   providers: [AppService],
