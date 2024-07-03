@@ -12,7 +12,11 @@ export class Link extends BaseEntity {
   code: string;
 
   @ManyToMany(() => User)
-  @JoinColumn({name: 'userId'})
+  @JoinTable({
+    name: 'linkUsers',
+    joinColumn: {name: 'linkId', referencedColumnName: 'id'},
+    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id'}
+  })
   user: User;
 
   @ManyToMany(() => Product)

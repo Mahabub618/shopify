@@ -11,6 +11,8 @@ export class LinkService {
     return this.linkRepository.save(options);
   }
   async getAllLink(id: number) {
-    return this.linkRepository.find({where: {id}});
+    return this.linkRepository.find({
+      where: { user: { id: id } }
+    });
   }
 }
