@@ -22,7 +22,7 @@ export class AuthService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>,
               private jwtService: JwtService) {
   }
-  async register(registerDto: RegisterDto){
+  async register(registerDto: RegisterDto, request: Request){
     const { firstName, lastName, email, password, confirmPassword } = registerDto;
 
     if (password !== confirmPassword) {
@@ -34,12 +34,12 @@ export class AuthService {
       user.lastName = lastName;
       user.email = email;
       user.salt = await bcrypt.genSalt();
-      user.isAmbassador = false;
+      user.isAmbassador = (request.path === '/api/ambassador/register');
       user.password = await this.hashPassword(registerDto.password, user.salt);
       try {
         return await user.save();
       } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
+        if (error.code === 'ER_DUP_ENTRY' || error.code === 'EREQUEST') {
           throw new ConflictException('Email is already exist');
         }
         else {
