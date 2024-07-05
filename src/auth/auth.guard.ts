@@ -14,7 +14,10 @@ export class AuthGuard implements CanActivate {
         return false;
       }
       const token = cookie.includes('=') ? cookie.split('=')[1] : cookie;
-      return this.jwtService.verify(token);
+      const { scope } = this.jwtService.verify(token);
+
+      const isAdmin = request.path.toString().indexOf('api/admin') >= 0;
+      return (isAdmin && scope === 'admin') || (!isAdmin && scope === 'ambassador');
     } catch (error) {
       // console.log('JWT verification failed:', error.message);
       return false;

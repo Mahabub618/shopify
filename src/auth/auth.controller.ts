@@ -35,8 +35,12 @@ export class AuthController {
     return this.authService.register(registerDto, request);
   }
   @Post(['admin/login', 'ambassador/login'])
-  async login(@Body(ValidationPipe) authCredentialDto: AuthCredentialDto, @Res({passthrough: true}) response: Response):Promise<{message: string}> {
-    return this.authService.login(authCredentialDto, response);
+  async login(
+    @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
+    @Res({passthrough: true}) response: Response,
+    @Req() request: Request
+  ):Promise<{message: string}> {
+    return this.authService.login(authCredentialDto, response, request);
   }
   @UseGuards(AuthGuard)
   @Get(['admin/user', 'ambassador/user'])

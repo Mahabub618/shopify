@@ -52,12 +52,14 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
-  async login(authCredentialDto: AuthCredentialDto, response: Response):Promise<{message: string}>{
+  async login(authCredentialDto: AuthCredentialDto, response: Response, request: Request):Promise<{message: string}>{
     const { email, password } = authCredentialDto;
-    const user: User = await this.userRepository.findOne({where: { email }});
+    const isAmbassador = (request.path === '/api/ambassador/login');
+    const scope: string = (isAmbassador ? 'ambassador' : 'admin');
 
+    const user: User = await this.userRepository.findOne({where: { email, isAmbassador }});
     if (user && await user.validatePassword(password)) {
-      const payload: JwtPayload = { email };
+      const payload: JwtPayload = { email, scope };
       const accessToken = this.jwtService.sign(payload);
       response.cookie('jwt', accessToken, {httpOnly: true});
       return { message: 'success' };
