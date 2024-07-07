@@ -12,7 +12,7 @@ import { OrderItemService } from '../order/order-item.service';
   for(let i = 0; i < 30; i++) {
     const order = await orderService.save({
       transactionId: faker.finance.bitcoinAddress(),
-      userId: faker.string.uuid(),
+      userId: faker.number.int({min: 1, max: 100000}),
       code: faker.lorem.slug(2),
       ambassadorEmail: faker.internet.email(),
       firstName: faker.name.firstName(),
