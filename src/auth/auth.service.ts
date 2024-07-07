@@ -90,7 +90,7 @@ export class AuthService {
         const { orders, password, salt, ...data } = user;
         return {
           ...data,
-          revenue: user.getRevenue()
+          revenue: user.revenue
         };
       }
       else {

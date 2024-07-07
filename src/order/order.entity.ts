@@ -75,7 +75,7 @@ export class Order extends BaseEntity {
     return this.orderItems.reduce((sum, orderItem) => sum + (orderItem.price*orderItem.quantity), 0);
   }
 
-  getAmbassadorRevenue(): number {
+  get ambassadorRevenue(): number {
     return this.orderItems.reduce((sum, orderItem) => sum + orderItem.ambassadorRevenue, 0);
   }
 }

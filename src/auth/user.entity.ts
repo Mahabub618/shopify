@@ -37,7 +37,7 @@ export class User extends BaseEntity {
   })
   orders: Order[]
 
-  getRevenue(): number {
-    return this.orders.filter(order => order.complete).reduce((sum, order) => sum + order.getAmbassadorRevenue() ,0)
+  get revenue(): number {
+    return this.orders.filter(order => order.complete).reduce((sum, order) => sum + order.ambassadorRevenue ,0)
   }
 }
