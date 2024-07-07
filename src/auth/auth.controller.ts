@@ -44,7 +44,7 @@ export class AuthController {
   }
   @UseGuards(AuthGuard)
   @Get(['admin/user', 'ambassador/user'])
-  async user(@Req() request: Request): Promise<User> {
+  async user(@Req() request: Request): Promise<User | {revenue: number}> {
     return this.authService.verifyUser(request);
   }
   @UseGuards(AuthGuard)

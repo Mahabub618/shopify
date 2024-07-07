@@ -2,6 +2,7 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGe
 import { OrderItem } from './order-item.entity';
 import { Exclude, Expose } from "class-transformer";
 import { Link } from "../link/link.entity";
+import { User } from "../auth/user.entity";
 
 @Entity()
 export class Order extends BaseEntity {
@@ -59,6 +60,11 @@ export class Order extends BaseEntity {
   })
   link: Link
 
+  @ManyToOne(type => User, user => user.orders, {
+    createForeignKeyConstraints: false
+  })
+  user: User;
+
   @Expose()
   get name() {
     return `${this.firstName} ${this.lastName}`;
@@ -67,5 +73,9 @@ export class Order extends BaseEntity {
   @Expose()
   get total() {
     return this.orderItems.reduce((sum, orderItem) => sum + (orderItem.price*orderItem.quantity), 0);
+  }
+
+  getAmbassadorRevenue(): number {
+    return this.orderItems.reduce((sum, orderItem) => sum + orderItem.ambassadorRevenue, 0);
   }
 }

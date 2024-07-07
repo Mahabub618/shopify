@@ -71,12 +71,31 @@ export class AuthService {
   async verifyUser(request: Request) {
     const cookie = request.cookies['jwt'];
     const { email } = await this.jwtService.verifyAsync(cookie);
-    const user = await this.userRepository.findOne({where: {email}});
-    if (user) {
-      return user;
+
+    if (request.path === '/api/admin/user') {
+      const user = await this.userRepository.findOne({where: {email}});
+      if (user) {
+        return user;
+      }
+      else {
+        throw new NotFoundException('User not found!');
+      }
     }
     else {
-      throw new NotFoundException('User not found!');
+      const user = await this.userRepository.findOne({
+        where: { email },
+        relations: ['orders', 'orders.orderItems']
+      });
+      if (user) {
+        const { orders, password, salt, ...data } = user;
+        return {
+          ...data,
+          revenue: user.getRevenue()
+        };
+      }
+      else {
+        throw new NotFoundException('User not found!');
+      }
     }
   }
   async logout(response: Response): Promise<{message: string}> {
