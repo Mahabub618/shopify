@@ -1,4 +1,13 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from "typeorm";
 import { User } from "../auth/user.entity";
 import { Product } from "../product/product.entity";
 import { JoinTable } from "typeorm";
@@ -12,12 +21,8 @@ export class Link extends BaseEntity {
   @Column({unique: true})
   code: string;
 
-  @ManyToMany(() => User)
-  @JoinTable({
-    name: 'linkUsers',
-    joinColumn: {name: 'linkId', referencedColumnName: 'id'},
-    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id'}
-  })
+  @ManyToOne(() => User)
+  @JoinColumn({name: 'userId'})
   user: User;
 
   @ManyToMany(() => Product)
