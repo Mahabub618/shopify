@@ -1,12 +1,17 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "./product.entity";
 import { DeleteResult, Repository } from "typeorm";
 import { ProductCreateDto } from "./dtos/productCreate.dto";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from "cache-manager";
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {
+  constructor(
+    @InjectRepository(Product) private productRepository: Repository<Product>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {
   }
   async save(options) {
     return this.productRepository.save(options);
@@ -50,5 +55,14 @@ export class ProductService {
       throw new NotFoundException(`Task with ID "${id}" not found!`);
     }
     return result;
+  }
+  async getProductFromBackend(): Promise<Product[]> {
+    let products = await this.cacheManager.get('productsBackend');
+
+    if (!products) {
+      products = await this.getProduct();
+      await this.cacheManager.set('productsBackend', products, {ttl: 1800})
+    }
+    return products;
   }
 }

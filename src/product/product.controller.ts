@@ -2,19 +2,20 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, Inject,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  UseGuards,
-  ValidationPipe
-} from "@nestjs/common";
+  UseGuards, UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ProductService } from "./product.service";
 import { ProductCreateDto } from "./dtos/productCreate.dto";
 import { DeleteResult } from "typeorm";
 import { Product } from "./product.entity";
 import { AuthGuard } from "../auth/auth.guard";
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller()
 export class ProductController {
@@ -52,5 +53,18 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number
   ): Promise<DeleteResult> {
     return this.productService.deleteProductById(id);
+  }
+
+  @CacheKey('productsFrontend')
+  @CacheTTL(1800)
+  @UseInterceptors(CacheInterceptor)
+  @Get('ambassador/products/frontend')
+  async frontend(){
+    return this.productService.getProduct();
+  }
+
+  @Get('ambassador/products/backend')
+  async backend() {
+    return this.productService.getProductFromBackend();
   }
 }
