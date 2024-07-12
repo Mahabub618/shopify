@@ -25,7 +25,8 @@ import { SharedModule } from "../shared/shared.module";
   ],
   exports: [
     JwtStrategy,
-    PassportModule
+    PassportModule,
+    AuthService
   ]
 })
 export class AuthModule {}

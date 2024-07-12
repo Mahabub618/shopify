@@ -149,4 +149,17 @@ export class AuthService {
       throw new NotFoundException('User not found!');
     }
   }
+
+  async verifyUserForLink(request: Request) {
+    const cookie = request.cookies['jwt'];
+    const { email } = await this.jwtService.verifyAsync(cookie);
+    const user = await this.userRepository.findOne({where: {email}});
+
+    if (user) {
+      return user;
+    }
+    else {
+      throw new NotFoundException('User not found!');
+    }
+  }
 }
