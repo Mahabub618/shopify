@@ -13,7 +13,7 @@ export class Order extends BaseEntity {
   transactionId: string;
 
   @Column()
-  userId: string;
+  userId: number;
 
   @Column()
   code: string;
@@ -62,6 +62,9 @@ export class Order extends BaseEntity {
 
   @ManyToOne(type => User, user => user.orders, {
     createForeignKeyConstraints: false
+  })
+  @JoinColumn({
+    name: 'userId'
   })
   user: User;
 
