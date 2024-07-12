@@ -16,6 +16,7 @@ import { DeleteResult } from "typeorm";
 import { Product } from "./product.entity";
 import { AuthGuard } from "../auth/auth.guard";
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { ProductUpdateDto } from './dtos/productUpdate.dto';
 
 @Controller()
 export class ProductController {
@@ -43,7 +44,7 @@ export class ProductController {
   @Put('admin/products/:id')
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
-    @Body(ValidationPipe) productDto: ProductCreateDto): Promise<Product> {
+    @Body(ValidationPipe) productDto: ProductUpdateDto): Promise<Product> {
     return this.productService.updateProduct(id, productDto);
   }
 
