@@ -77,6 +77,11 @@ export class ProductService {
         || product.description.toLowerCase().indexOf(search) >= 0);
     }
 
+    if (request.query.sort) {
+      const sortOrder = request.query.sort === 'asc' ? 1 : -1;
+      products.sort((a, b) => (a.price - b.price) * sortOrder);
+    }
+
     return products;
   }
 }
