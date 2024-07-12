@@ -74,8 +74,10 @@ export class ProductService {
 
     if (request.query.search) {
       const search = request.query.search.toString().toLowerCase();
-      products = products.filter(product => product.title.toLowerCase().indexOf(search) >= 0
-        || product.description.toLowerCase().indexOf(search) >= 0);
+      products = products.filter(product =>
+        (product.title?.toLowerCase().includes(search) ?? false) ||
+        (product.description?.toLowerCase().includes(search) ?? false)
+      );
     }
 
     if (request.query.sort) {
