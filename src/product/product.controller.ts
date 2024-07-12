@@ -6,7 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Put, Req,
   UseGuards, UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +17,7 @@ import { Product } from "./product.entity";
 import { AuthGuard } from "../auth/auth.guard";
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { ProductUpdateDto } from './dtos/productUpdate.dto';
+import { Request } from "express";
 
 @Controller()
 export class ProductController {
@@ -65,7 +66,9 @@ export class ProductController {
   }
 
   @Get('ambassador/products/backend')
-  async backend() {
-    return this.productService.getProductFromBackend();
+  async backend(
+    @Req() request: Request
+  ) {
+    return this.productService.getProductFromBackend(request);
   }
 }

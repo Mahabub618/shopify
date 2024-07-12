@@ -6,6 +6,7 @@ import { ProductCreateDto } from "./dtos/productCreate.dto";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from "cache-manager";
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Request } from "express";
 
 @Injectable()
 export class ProductService {
@@ -62,13 +63,20 @@ export class ProductService {
     this.eventEmitter.emit('productDB');
     return result;
   }
-  async getProductFromBackend(): Promise<Product[]> {
-    let products = await this.cacheManager.get('productsBackend');
+  async getProductFromBackend(request: Request): Promise<Product[]> {
+    let products = await this.cacheManager.get<Product[]>('productsBackend');
 
     if (!products) {
       products = await this.getProduct();
       await this.cacheManager.set('productsBackend', products, {ttl: 1800})
     }
+
+    if (request.query.search) {
+      const search = request.query.search.toString().toLowerCase();
+      products = products.filter(product => product.title.toLowerCase().indexOf(search) >= 0
+        || product.description.toLowerCase().indexOf(search) >= 0);
+    }
+
     return products;
   }
 }
