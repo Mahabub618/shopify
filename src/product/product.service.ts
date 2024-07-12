@@ -5,12 +5,14 @@ import { DeleteResult, Repository } from "typeorm";
 import { ProductCreateDto } from "./dtos/productCreate.dto";
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from "cache-manager";
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product) private productRepository: Repository<Product>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private eventEmitter: EventEmitter2
   ) {
   }
   async save(options) {
@@ -28,7 +30,9 @@ export class ProductService {
     product.image = image;
 
     try {
-      return await product.save();
+      await product.save();
+      this.eventEmitter.emit('productDB');
+      return product;
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -47,6 +51,7 @@ export class ProductService {
     product.price = productUpdateDto.price;
     product.image = productUpdateDto.image;
     await product.save();
+    this.eventEmitter.emit('productDB');
     return product;
   }
   async deleteProductById(id: number): Promise<DeleteResult> {
@@ -54,6 +59,7 @@ export class ProductService {
     if (!result.affected) {
       throw new NotFoundException(`Task with ID "${id}" not found!`);
     }
+    this.eventEmitter.emit('productDB');
     return result;
   }
   async getProductFromBackend(): Promise<Product[]> {

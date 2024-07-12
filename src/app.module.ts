@@ -8,14 +8,15 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { LinkModule } from './link/link.module';
 import { SharedModule } from './shared/shared.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql', // For mySQL 'mysql'
+      type: 'mssql', // For mySQL 'mysql'
       host: 'localhost',
       port: 3306,
-      username: 'root', // For mySQL 'root'
+      username: 'sa', // For mySQL 'root'
       password: 'root',
       database: 'ambassador',
       autoLoadEntities: true,
@@ -24,6 +25,7 @@ import { SharedModule } from './shared/shared.module';
         trustServerCertificate: true,
       }
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,
     ProductModule,

@@ -4,6 +4,7 @@ import { ProductService } from './product.service';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Product } from "./product.entity";
 import { SharedModule } from "../shared/shared.module";
+import { ProductListener } from './listener/product.listener';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { SharedModule } from "../shared/shared.module";
     SharedModule
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService, ProductListener]
 })
 export class ProductModule {}
