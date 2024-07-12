@@ -4,6 +4,7 @@ import { Link } from "./link.entity";
 import { Repository } from "typeorm";
 import { Request } from 'express';
 import { AuthService } from '../auth/auth.service';
+import { Order } from '../order/order.entity';
 
 @Injectable()
 export class LinkService {
@@ -40,5 +41,24 @@ export class LinkService {
     } catch (error) {
       throw new InternalServerErrorException();
     }
+  }
+
+  async getStats(request: Request) {
+    const user = await this.authService.verifyUserForLink(request);
+
+    const links: Link[] = await this.linkRepository.find({
+      where: { user },
+      relations: ['orders']
+    });
+
+    return links.map(link => {
+      const completeOrders: Order[] = link.orders.filter(order => order.complete);
+
+      return {
+        code: link.code,
+        count: completeOrders.length,
+        revenue: completeOrders.reduce((sum, order) => sum + order.ambassadorRevenue, 0)
+      }
+    });
   }
 }

@@ -34,4 +34,10 @@ export class LinkController {
   ): Promise<Link> {
     return this.linkService.createLink(request, products);
   }
+
+  @UseGuards(AuthGuard)
+  @Get('ambassador/stats')
+  async getStats(@Req() request: Request) {
+    return this.linkService.getStats(request);
+  }
 }
