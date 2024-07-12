@@ -21,7 +21,7 @@ export class LinkService {
       relations: ['orders']
     });
   }
-  async createLink(request: Request, products: number[]) {
+  async createLink(request: Request, products: number[]): Promise<Link> {
     const user = await this.authService.verifyUserForLink(request);
 
     // return this.linkRepository.save({

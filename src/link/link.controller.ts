@@ -12,6 +12,7 @@ import {
 import { LinkService } from "./link.service";
 import { AuthGuard } from "../auth/auth.guard";
 import { Request } from 'express';
+import { Link } from './link.entity';
 
 @Controller()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -30,7 +31,7 @@ export class LinkController {
   async createLink(
     @Body('products') products: number[],
     @Req() request: Request
-  ) {
+  ): Promise<Link> {
     return this.linkService.createLink(request, products);
   }
 }
