@@ -63,7 +63,8 @@ export class ProductService {
     this.eventEmitter.emit('productDB');
     return result;
   }
-  async getProductFromBackend(request: Request): Promise<Product[]> {
+  async getProductFromBackend(request: Request): Promise<{ products: Product[], nextPageToken?: string }> {
+    const { nextPageToken, pageSize = 10 } = request.query as any;
     let products = await this.cacheManager.get<Product[]>('productsBackend');
 
     if (!products) {
@@ -82,6 +83,17 @@ export class ProductService {
       products.sort((a, b) => (a.price - b.price) * sortOrder);
     }
 
-    return products;
+    let startIndex = 0;
+    if (nextPageToken) {
+      startIndex = parseInt(Buffer.from(nextPageToken, 'base64').toString('ascii'), 10);
+    }
+
+    const paginatedProducts = products.slice(startIndex, startIndex + pageSize);
+    const newNextPageToken = startIndex + pageSize < products.length ? Buffer.from((startIndex + pageSize).toString()).toString('base64') : null;
+
+    return {
+      products: paginatedProducts,
+      nextPageToken: newNextPageToken,
+    };
   }
 }

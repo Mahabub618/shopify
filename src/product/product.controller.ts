@@ -68,7 +68,7 @@ export class ProductController {
   @Get('ambassador/products/backend')
   async backend(
     @Req() request: Request
-  ) {
+  ): Promise<{ products: Product[], nextPageToken?: string }> {
     return this.productService.getProductFromBackend(request);
   }
 }
