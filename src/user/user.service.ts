@@ -12,4 +12,16 @@ export class UserService {
   async ambassadors() {
     return this.userRepository.find({where: {isAmbassador: true}});
   }
+  async getRankings() {
+    const ambassadors: User[] = await this.userRepository.find({
+      where: {isAmbassador: true},
+      relations: ['orders', 'orders.orderItems']
+    });
+    return ambassadors.map(ambassador => {
+      return {
+        name: ambassador.name,
+        revenue: ambassador.revenue
+      }
+    })
+  }
 }

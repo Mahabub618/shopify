@@ -1,6 +1,6 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from "bcrypt";
-import { Exclude } from "class-transformer";
+import { Exclude, Expose } from 'class-transformer';
 import { Order } from "../order/order.entity";
 @Entity()
 export class User extends BaseEntity {
@@ -39,5 +39,9 @@ export class User extends BaseEntity {
 
   get revenue(): number {
     return this.orders.filter(order => order.complete).reduce((sum, order) => sum + order.ambassadorRevenue ,0)
+  }
+
+  get name() {
+    return `${this.firstName} ${this.lastName}`;
   }
 }

@@ -12,4 +12,10 @@ export class UserController {
   ambassadors() {
     return this.userService.ambassadors();
   }
+
+  @UseGuards(AuthGuard)
+  @Get('ambassador/rankings')
+  async ranking() {
+    return this.userService.getRankings();
+  }
 }
