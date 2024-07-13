@@ -21,7 +21,19 @@ export class UserService {
     const client = this.redisService.getClient();
 
     client.zrevrangebyscore('rankings', '+inf', '-inf', 'withscores', (err, result) => {
-      response.send(result);
+      let score;
+      response.send(result.reduce((obj, nameOrRevenue) => {
+        if (isNaN(parseInt(nameOrRevenue))) {
+          return {
+            ...obj,
+            [nameOrRevenue]: score
+          }
+        }
+        else {
+          score = parseInt(nameOrRevenue);
+          return obj;
+        }
+      }, {}));
     });
 
   }
