@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Link } from "./link.entity";
 import { Repository } from "typeorm";
@@ -60,5 +60,19 @@ export class LinkService {
         revenue: completeOrders.reduce((sum, order) => sum + order.ambassadorRevenue, 0)
       }
     });
+  }
+
+  async getLink(code: string): Promise<Link> {
+    const link: Link = await this.linkRepository.findOne({
+      where: { code },
+      relations: ['user', 'products']
+    })
+
+    if (link) {
+      return link;
+    }
+    else {
+      throw new NotFoundException('Link not found!');
+    }
   }
 }

@@ -40,4 +40,10 @@ export class LinkController {
   async getStats(@Req() request: Request) {
     return this.linkService.getStats(request);
   }
+
+  @UseGuards(AuthGuard)
+  @Get('checkout/links/:code')
+  async getLink(@Param('code') code: string): Promise<Link> {
+    return this.linkService.getLink(code);
+  }
 }
