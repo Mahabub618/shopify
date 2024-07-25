@@ -1,10 +1,11 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Link } from "./link.entity";
 import { Repository } from "typeorm";
 import { Request } from 'express';
 import { AuthService } from '../auth/auth.service';
 import { Order } from '../order/order.entity';
+import { CreateOrderDto } from '../order/dtos/create-order.dto';
 
 @Injectable()
 export class LinkService {
@@ -13,15 +14,18 @@ export class LinkService {
     private authService: AuthService
   ) {
   }
+
   async save(options) {
     return this.linkRepository.save(options);
   }
+
   async getAllLink(id: number) {
     return this.linkRepository.find({
       where: { user: { id: id } },
       relations: ['orders']
     });
   }
+
   async createLink(request: Request, products: number[]): Promise<Link> {
     const user = await this.authService.verifyUserForLink(request);
 
@@ -73,6 +77,20 @@ export class LinkService {
     }
     else {
       throw new NotFoundException('Link not found!');
+    }
+  }
+
+  async getLinkForOrder(createOrderDto: CreateOrderDto): Promise<Link> {
+    const link: Link = await this.linkRepository.findOne({
+      where: { code: createOrderDto.code },
+      relations: ['user']
+    });
+
+    if (link) {
+      return link;
+    }
+    else {
+      throw new BadRequestException('Invalid link!');
     }
   }
 }

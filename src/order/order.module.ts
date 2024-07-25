@@ -6,11 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderItem } from './order-item.entity';
 import { OrderItemService } from './order-item.service';
 import { SharedModule } from "../shared/shared.module";
+import { LinkModule } from '../link/link.module';
+import { ProductModule } from '../product/product.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderItem]),
-    SharedModule
+    SharedModule,
+    LinkModule,
+    ProductModule
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderItemService]
