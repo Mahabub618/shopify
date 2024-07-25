@@ -27,7 +27,16 @@ export class OrderService {
     });
   }
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
-    const link: Link = await this.linkService.getLinkForOrder(createOrderDto);
+    const link: Link = await this.linkService.getLink(createOrderDto.code);
+
+    const extractProductIdFromLink: number[] = link.products.map(product => product.id);
+    const invalidAnyProductId: boolean = createOrderDto.products.some(
+      product => !extractProductIdFromLink.includes(product.productId)
+    )
+
+    if (invalidAnyProductId) {
+      throw new BadRequestException('One or more products are not associated with the provided link.');
+    }
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();

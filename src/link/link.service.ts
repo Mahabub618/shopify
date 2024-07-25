@@ -79,18 +79,4 @@ export class LinkService {
       throw new BadRequestException('Invalid link!');
     }
   }
-
-  async getLinkForOrder(createOrderDto: CreateOrderDto): Promise<Link> {
-    const link: Link = await this.linkRepository.findOne({
-      where: { code: createOrderDto.code },
-      relations: ['user']
-    });
-
-    if (link) {
-      return link;
-    }
-    else {
-      throw new BadRequestException('Invalid link!');
-    }
-  }
 }
