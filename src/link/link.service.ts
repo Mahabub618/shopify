@@ -76,7 +76,7 @@ export class LinkService {
       return link;
     }
     else {
-      throw new NotFoundException('Link not found!');
+      throw new BadRequestException('Invalid link!');
     }
   }
 
