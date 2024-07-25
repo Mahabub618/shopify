@@ -5,7 +5,6 @@ import { Repository } from "typeorm";
 import { Request } from 'express';
 import { AuthService } from '../auth/auth.service';
 import { Order } from '../order/order.entity';
-import { CreateOrderDto } from '../order/dtos/create-order.dto';
 
 @Injectable()
 export class LinkService {
