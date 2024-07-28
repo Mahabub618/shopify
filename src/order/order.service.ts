@@ -10,15 +10,19 @@ import { Product } from '../product/product.entity';
 import { OrderItem } from './order-item.entity';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrderService {
+  paymentAPI = this.configService.get('CHECKOUT_URL');
+
   constructor(
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     private linkService: LinkService,
     private productService: ProductService,
     private dataSource: DataSource,
-    @InjectStripe() private readonly stripeClient: Stripe
+    @InjectStripe() private readonly stripeClient: Stripe,
+    private configService: ConfigService
     ) {
   }
   async save(options) {
@@ -91,8 +95,8 @@ export class OrderService {
       const source = await this.stripeClient.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items,
-        success_url: 'http://localhost:4200/success?source={CHECKOUT_SESSION_ID}',
-        cancel_url: 'http://localhost:4200/error'
+        success_url: `${this.paymentAPI}/success?source={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${this.paymentAPI}/error`
       });
 
       order.transactionId = source['id'];

@@ -9,6 +9,7 @@ import { SharedModule } from "../shared/shared.module";
 import { LinkModule } from '../link/link.module';
 import { ProductModule } from '../product/product.module';
 import { StripeModule } from 'nestjs-stripe';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,10 +17,13 @@ import { StripeModule } from 'nestjs-stripe';
     SharedModule,
     LinkModule,
     ProductModule,
-    StripeModule.forRoot({
-      apiKey: 'sk_test_51PhZZpBpe2hxNkfKnenS9Woh10KkYowSHVHww7UN05Y0oNJWVMdLIwn2YtGq8D2q2TCToIYmRCnp5Ol3E5nqFs5700buCxftXS',
-      apiVersion: '2020-08-27',
-    }),
+    StripeModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        apiKey: configService.get('STRIPE_KEY'),
+        apiVersion: '2020-08-27'
+      })
+    })
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderItemService]
