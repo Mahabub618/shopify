@@ -17,7 +17,7 @@ export class OrderController {
   }
 
   @Post('checkout/orders')
-  async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
+  async createOrder(@Body() createOrderDto: CreateOrderDto) {
     return this.orderService.createOrder(createOrderDto);
   }
 }

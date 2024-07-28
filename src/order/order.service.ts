@@ -8,6 +8,8 @@ import { CreateOrderDto } from './dtos/create-order.dto';
 import { ProductService } from '../product/product.service';
 import { Product } from '../product/product.entity';
 import { OrderItem } from './order-item.entity';
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
 
 @Injectable()
 export class OrderService {
@@ -15,7 +17,8 @@ export class OrderService {
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     private linkService: LinkService,
     private productService: ProductService,
-    private dataSource: DataSource
+    private dataSource: DataSource,
+    @InjectStripe() private readonly stripeClient: Stripe
     ) {
   }
   async save(options) {
@@ -26,7 +29,7 @@ export class OrderService {
       relations: ['orderItems']
     });
   }
-  async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
+  async createOrder(createOrderDto: CreateOrderDto) {
     const link: Link = await this.linkService.getLink(createOrderDto.code);
 
     const extractProductIdFromLink: number[] = link.products.map(product => product.id);
@@ -43,20 +46,22 @@ export class OrderService {
     await queryRunner.startTransaction();
 
     try {
-      const order: Order = new Order();
-      order.userId = link.user.id;
-      order.transactionId = "a6iU4dflkd6";
-      order.ambassadorEmail = link.user.email;
-      order.firstName = createOrderDto.firstName;
-      order.lastName = createOrderDto.lastName;
-      order.email = createOrderDto.email;
-      order.address = createOrderDto.address;
-      order.country = createOrderDto.country;
-      order.city = createOrderDto.city;
-      order.zip = createOrderDto.zip;
-      order.code = createOrderDto.code;
+      const o: Order = new Order();
+      o.userId = link.user.id;
+      o.transactionId = "a6iU4dflkd6";
+      o.ambassadorEmail = link.user.email;
+      o.firstName = createOrderDto.firstName;
+      o.lastName = createOrderDto.lastName;
+      o.email = createOrderDto.email;
+      o.address = createOrderDto.address;
+      o.country = createOrderDto.country;
+      o.city = createOrderDto.city;
+      o.zip = createOrderDto.zip;
+      o.code = createOrderDto.code;
 
-      await queryRunner.manager.save(order);
+      const order: Order = await queryRunner.manager.save(o);
+
+      const line_items: any[] = [];
 
       for (let p of createOrderDto.products) {
         const product: Product = await this.productService.getProductById(p.productId);
@@ -70,11 +75,32 @@ export class OrderService {
         orderItem.adminRevenue = 0.9 * product.price * p.quantity; // 90% admin revenue of product
 
         await queryRunner.manager.save(orderItem);
+
+        line_items.push({
+          name: product.title,
+          description: product.description,
+          images: [
+            product.image
+          ],
+          amount: 100 * product.price,
+          currency: 'usd',
+          quantity: p.quantity
+        })
       }
+
+      const source = await this.stripeClient.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items,
+        success_url: 'http://localhost:4200/success?source={CHECKOUT_SESSION_ID}',
+        cancel_url: 'http://localhost:4200/error'
+      });
+
+      order.transactionId = source['id'];
+      await queryRunner.manager.save(order);
 
       await queryRunner.commitTransaction();
 
-      return order;
+      return source;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new BadRequestException(error.message);
