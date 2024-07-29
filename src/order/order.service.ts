@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './order.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -11,6 +11,7 @@ import { OrderItem } from './order-item.entity';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class OrderService {
@@ -22,7 +23,8 @@ export class OrderService {
     private productService: ProductService,
     private dataSource: DataSource,
     @InjectStripe() private readonly stripeClient: Stripe,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private eventEmitter: EventEmitter2
     ) {
   }
   async save(options) {
@@ -110,6 +112,24 @@ export class OrderService {
       throw new BadRequestException(error.message);
     } finally {
       await queryRunner.release();
+    }
+  }
+  async confirmOrder(source: string): Promise<{message: string}> {
+    const order = await this.orderRepository.findOne({
+      where: { transactionId: source },
+      relations: ['user', 'orderItems']
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    await this.orderRepository.update(order.id, { complete: true });
+
+    this.eventEmitter.emit('order.completed', order);
+
+    return {
+      message: 'success'
     }
   }
 }

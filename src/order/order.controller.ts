@@ -20,4 +20,9 @@ export class OrderController {
   async createOrder(@Body() createOrderDto: CreateOrderDto) {
     return this.orderService.createOrder(createOrderDto);
   }
+
+  @Post('checkout/orders/confirm')
+  async confirmOrder(@Body('source') source: string): Promise<{message: string}> {
+    return this.orderService.confirmOrder(source);
+  }
 }
