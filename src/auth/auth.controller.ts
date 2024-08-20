@@ -39,7 +39,7 @@ export class AuthController {
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
     @Res({passthrough: true}) response: Response,
     @Req() request: Request
-  ):Promise<{message: string}> {
+  ):Promise<User> {
     return this.authService.login(authCredentialDto, response, request);
   }
   @UseGuards(AuthGuard)

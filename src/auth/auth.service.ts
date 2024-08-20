@@ -52,7 +52,7 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
-  async login(authCredentialDto: AuthCredentialDto, response: Response, request: Request):Promise<{message: string}>{
+  async login(authCredentialDto: AuthCredentialDto, response: Response, request: Request):Promise<User>{
     const { email, password } = authCredentialDto;
     const isAmbassador = (request.path === '/api/ambassador/login');
     const scope: string = (isAmbassador ? 'ambassador' : 'admin');
@@ -62,7 +62,7 @@ export class AuthService {
       const payload: JwtPayload = { email, scope };
       const accessToken = this.jwtService.sign(payload);
       response.cookie('jwt', accessToken, {httpOnly: true});
-      return { message: 'success' };
+      return user;
     }
     else {
       throw new UnauthorizedException('Invalid credentials');
